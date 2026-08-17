@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using BCrypt.Net;
 using SGM.Application.BL.BE;
 using SGM.Domain.Entities;
 using SGM.Domain.Interfaces;
@@ -33,8 +31,20 @@ namespace SGM.Application.BL.BC.Service
                 };
             }
 
-            // Por ahora comparación directa (luego se cambia por hash)
-            if (usuario.Password != request.Password)
+            bool passwordValida;
+
+            // Si la contraseña guardada es un hash de BCrypt
+            if (usuario.Password.StartsWith("$2"))
+            {
+                passwordValida = BCrypt.Net.BCrypt.Verify(request.Password, usuario.Password);
+            }
+            else
+            {
+                // Todavía está en texto plano (usuarios antiguos)
+                passwordValida = usuario.Password == request.Password;
+            }
+
+            if (!passwordValida)
             {
                 return new LoginResponse
                 {
@@ -55,9 +65,24 @@ namespace SGM.Application.BL.BC.Service
             };
         }
 
-        public bool Registrar(Usuario usuario) => _repo.Registrar(usuario);
+        public bool Registrar(Usuario usuario)
+        {
+            // Hashear la contraseña antes de guardar
+            usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
+            return _repo.Registrar(usuario);
+        }
 
-        public bool Actualizar(Usuario usuario) => _repo.Actualizar(usuario);
+        public bool Actualizar(Usuario usuario)
+        {
+            // Si la contraseña no viene hasheada (el usuario la cambió), la hasheamos
+            // BCrypt hashes empiezan con $2
+            if (!usuario.Password.StartsWith("$2"))
+            {
+                usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
+            }
+
+            return _repo.Actualizar(usuario);
+        }
 
         public bool Eliminar(int id) => _repo.Eliminar(id);
     }
