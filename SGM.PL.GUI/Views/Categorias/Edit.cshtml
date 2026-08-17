@@ -1,0 +1,17 @@
+﻿@model SGM.Domain.Entities.Categoria
+@{
+    ViewData["Title"] = "Editar Categoría";
+}
+
+<h2>Editar Categoría</h2>
+<hr />
+
+<form method="post" class="w-50">
+    <input type="hidden" name="IdCategoria" value="@Model.IdCategoria" />
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" name="Nombre" class="form-control" value="@Model.Nombre" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a href="/Categorias" class="btn btn-secondary">Cancelar</a>
+</form>

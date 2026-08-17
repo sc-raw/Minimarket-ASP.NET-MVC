@@ -1,0 +1,16 @@
+﻿@model SGM.Domain.Entities.Categoria
+@{
+    ViewData["Title"] = "Nueva Categoría";
+}
+
+<h2>Nueva Categoría</h2>
+<hr />
+
+<form method="post" class="w-50">
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" name="Nombre" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="/Categorias" class="btn btn-secondary">Cancelar</a>
+</form>

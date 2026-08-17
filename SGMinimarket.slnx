@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/SRC/">
+    <Project Path="SGM.Application/SGM.Application.csproj" />
+    <Project Path="SGM.Domain/SGM.Domain.csproj" />
+    <Project Path="SGM.Infrastructure/SGM.Infrastructure.csproj" />
+    <Project Path="SGM.PL.GUI/SGM.PL.GUI.csproj" />
+  </Folder>
+</Solution>

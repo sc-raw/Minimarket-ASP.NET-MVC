@@ -1,0 +1,40 @@
+﻿@model SGM.Domain.Entities.Usuario
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<h2>Editar Usuario</h2>
+<hr />
+
+<form method="post" class="w-50">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" name="Username" class="form-control" value="@Model.Username" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="Password" class="form-control" value="@Model.Password" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nombres</label>
+        <input type="text" name="Nombres" class="form-control" value="@Model.Nombres" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Apellidos</label>
+        <input type="text" name="Apellidos" class="form-control" value="@Model.Apellidos" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Rol</label>
+        <select name="Rol" class="form-select" required>
+            <option value="Administrador" selected="@(Model.Rol == "Administrador")">Administrador</option>
+            <option value="Cajero" selected="@(Model.Rol == "Cajero")">Cajero</option>
+        </select>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" name="Estado" value="true" class="form-check-input" @(Model.Estado ? "checked" : "") />
+        <label class="form-check-label">Activo</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a href="/Usuarios" class="btn btn-secondary">Cancelar</a>
+</form>

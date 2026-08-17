@@ -1,0 +1,41 @@
+﻿@model SGM.Domain.Entities.Cliente
+@{
+    ViewData["Title"] = "Editar Cliente";
+}
+
+<h2>Editar Cliente</h2>
+<hr />
+
+<form method="post" class="w-50">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <div class="mb-3">
+        <label class="form-label">DNI</label>
+        <input type="text" name="Dni" class="form-control" value="@Model.Dni" maxlength="8" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nombres</label>
+        <input type="text" name="Nombres" class="form-control" value="@Model.Nombres" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Apellidos</label>
+        <input type="text" name="Apellidos" class="form-control" value="@Model.Apellidos" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Dirección</label>
+        <input type="text" name="Direccion" class="form-control" value="@Model.Direccion" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Teléfono</label>
+        <input type="text" name="Telefono" class="form-control" value="@Model.Telefono" maxlength="9" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Correo</label>
+        <input type="email" name="Correo" class="form-control" value="@Model.Correo" />
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" name="Estado" value="true" class="form-check-input" @(Model.Estado ? "checked" : "") />
+        <label class="form-check-label">Activo</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a href="/Clientes" class="btn btn-secondary">Cancelar</a>
+</form>`

@@ -1,0 +1,211 @@
+﻿@{
+    ViewData["Title"] = "Nueva Venta";
+    var productos = ViewBag.Productos as List<SGM.Domain.Entities.Producto>;
+}
+
+<h2>Nueva Venta</h2>
+<hr />
+
+<div class="row">
+    <!-- Selección de Cliente y Productos -->
+    <div class="col-md-5">
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">Datos de la Venta</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Cliente</label>
+                    <select id="IdCliente" class="form-select" asp-items="ViewBag.Clientes">
+                        <option value="">-- Seleccione cliente --</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Producto</label>
+                    <select id="productoSelect" class="form-select">
+                        <option value="">-- Seleccione producto --</option>
+                        @if (productos != null)
+                        {
+                            foreach (var p in productos)
+                            {
+                                <option value="@p.IdProducto"
+                                        data-nombre="@p.Nombre"
+                                        data-precio="@p.Precio"
+                                        data-stock="@p.Stock">
+                                    @p.Codigo - @p.Nombre (Stock: @p.Stock) - S/ @p.Precio.ToString("N2")
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Cantidad</label>
+                    <input type="number" id="cantidad" class="form-control" value="1" min="1" />
+                </div>
+
+                <button type="button" class="btn btn-primary w-100" onclick="agregarProducto()">
+                    <i class="bi bi-plus-lg"></i> Agregar al carrito
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Carrito -->
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header bg-success text-white">Carrito de Venta</div>
+            <div class="card-body">
+                <table class="table table-sm" id="tablaCarrito">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Cant.</th>
+                            <th>Subtotal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Se llena con JavaScript -->
+                    </tbody>
+                </table>
+
+                <div class="text-end mt-3">
+                    <h4>Total: S/ <span id="totalVenta">0.00</span></h4>
+                </div>
+
+                <button type="button" class="btn btn-success w-100 mt-2" onclick="registrarVenta()">
+                    <i class="bi bi-check-lg"></i> Registrar Venta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let carrito = [];
+
+        function agregarProducto() {
+            const select = document.getElementById('productoSelect');
+            const option = select.options[select.selectedIndex];
+
+            if (!option.value) {
+                alert('Seleccione un producto');
+                return;
+            }
+
+            const idProducto = parseInt(option.value);
+            const nombre = option.dataset.nombre;
+            const precio = parseFloat(option.dataset.precio);
+            const stock = parseInt(option.dataset.stock);
+            const cantidad = parseInt(document.getElementById('cantidad').value);
+
+            if (cantidad <= 0) {
+                alert('La cantidad debe ser mayor a 0');
+                return;
+            }
+
+            if (cantidad > stock) {
+                alert('Stock insuficiente. Disponible: ' + stock);
+                return;
+            }
+
+            // Si ya existe en el carrito, sumar cantidad
+            const existe = carrito.find(x => x.idProducto === idProducto);
+            if (existe) {
+                if (existe.cantidad + cantidad > stock) {
+                    alert('Stock insuficiente');
+                    return;
+                }
+                existe.cantidad += cantidad;
+                existe.subtotal = existe.cantidad * existe.precio;
+            } else {
+                carrito.push({
+                    idProducto: idProducto,
+                    nombre: nombre,
+                    precio: precio,
+                    cantidad: cantidad,
+                    subtotal: precio * cantidad
+                });
+            }
+
+            renderCarrito();
+            document.getElementById('cantidad').value = 1;
+            select.selectedIndex = 0;
+        }
+
+        function eliminarItem(index) {
+            carrito.splice(index, 1);
+            renderCarrito();
+        }
+
+        function renderCarrito() {
+            const tbody = document.querySelector('#tablaCarrito tbody');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            carrito.forEach((item, index) => {
+                total += item.subtotal;
+                tbody.innerHTML += `
+                        <tr>
+                            <td>${item.nombre}</td>
+                            <td>S/ ${item.precio.toFixed(2)}</td>
+                            <td>${item.cantidad}</td>
+                            <td>S/ ${item.subtotal.toFixed(2)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="eliminarItem(${index})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+            });
+
+            document.getElementById('totalVenta').innerText = total.toFixed(2);
+        }
+
+        function registrarVenta() {
+            const idCliente = document.getElementById('IdCliente').value;
+
+            if (!idCliente) {
+                alert('Seleccione un cliente');
+                return;
+            }
+
+            if (carrito.length === 0) {
+                alert('El carrito está vacío');
+                return;
+            }
+
+            const request = {
+                idCliente: parseInt(idCliente),
+                detalles: carrito.map(x => ({
+                    idProducto: x.idProducto,
+                    cantidad: x.cantidad,
+                    precio: x.precio
+                }))
+            };
+
+            fetch('/Ventas/Create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Venta registrada correctamente. N° ' + data.idVenta);
+                        window.location.href = '/Ventas';
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(err => {
+                    alert('Error al registrar la venta');
+                    console.error(err);
+                });
+        }
+    </script>
+}
