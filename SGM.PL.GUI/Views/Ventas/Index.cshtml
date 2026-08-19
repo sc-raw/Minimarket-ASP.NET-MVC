@@ -17,10 +17,10 @@
             <th>ID</th>
             <th>Fecha</th>
             <th>Cliente</th>
-            <th>Usuario</th>
+            <th>Cajero</th>
             <th>Total</th>
             <th>Estado</th>
-            <th style="width:150px">Acciones</th>
+            <th style="width:200px">Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -29,8 +29,8 @@
             <tr>
                 <td>@item.Id</td>
                 <td>@item.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</td>
-                <td>@item.IdCliente</td>
-                <td>@item.IdUsuario</td>
+                <td>@item.NombreCliente</td>
+                <td>@item.NombreCajero</td>
                 <td>S/ @item.Total.ToString("N2")</td>
                 <td>
                     @if (item.Estado == "Completada")
@@ -43,12 +43,9 @@
                     }
                 </td>
                 <td>
-                    <a href="/Ventas/Details/@item.Id" class="btn btn-sm btn-outline-primary">Ver</a>
-                    @if (rol == "Administrador" && item.Estado == "Completada")
-                    {
-                        <a href="/Ventas/Anular/@item.Id" class="btn btn-sm btn-outline-danger"
-                           onclick="return confirm('¿Anular esta venta?')">Anular</a>
-                    }
+                    <a href="/Ventas/Details/@item.Id" class="btn btn-sm btn-info text-white">
+                        Detalles
+                    </a>
                 </td>
             </tr>
         }

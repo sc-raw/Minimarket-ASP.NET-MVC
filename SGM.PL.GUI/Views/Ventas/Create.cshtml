@@ -7,21 +7,26 @@
 <hr />
 
 <div class="row">
-    <!-- Selección de Cliente y Productos -->
+    <!-- Panel izquierdo: datos -->
     <div class="col-md-5">
-        <div class="card mb-3">
-            <div class="card-header bg-primary text-white">Datos de la Venta</div>
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                Datos de la Venta
+            </div>
             <div class="card-body">
+
+                <!-- Cliente -->
                 <div class="mb-3">
-                    <label class="form-label">Cliente</label>
+                    <label class="form-label fw-semibold">Cliente</label>
                     <select id="IdCliente" class="form-select" asp-items="ViewBag.Clientes">
                         <option value="">-- Seleccione cliente --</option>
                     </select>
                 </div>
 
+                <!-- Producto (solo código + nombre) -->
                 <div class="mb-3">
-                    <label class="form-label">Producto</label>
-                    <select id="productoSelect" class="form-select">
+                    <label class="form-label fw-semibold">Producto</label>
+                    <select id="productoSelect" class="form-select" onchange="mostrarDatosProducto()">
                         <option value="">-- Seleccione producto --</option>
                         @if (productos != null)
                         {
@@ -29,17 +34,31 @@
                             {
                                 <option value="@p.IdProducto"
                                         data-nombre="@p.Nombre"
+                                        data-codigo="@p.Codigo"
                                         data-precio="@p.Precio"
                                         data-stock="@p.Stock">
-                                    @p.Codigo - @p.Nombre (Stock: @p.Stock) - S/ @p.Precio.ToString("N2")
+                                    @p.Codigo - @p.Nombre
                                 </option>
                             }
                         }
                     </select>
                 </div>
 
+                <!-- Datos del producto seleccionado -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">Precio (S/)</label>
+                        <input type="text" id="precioProducto" class="form-control" readonly />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label fw-semibold">Stock disponible</label>
+                        <input type="text" id="stockProducto" class="form-control" readonly />
+                    </div>
+                </div>
+
+                <!-- Cantidad -->
                 <div class="mb-3">
-                    <label class="form-label">Cantidad</label>
+                    <label class="form-label fw-semibold">Cantidad</label>
                     <input type="number" id="cantidad" class="form-control" value="1" min="1" />
                 </div>
 
@@ -50,25 +69,29 @@
         </div>
     </div>
 
-    <!-- Carrito -->
+    <!-- Panel derecho: carrito -->
     <div class="col-md-7">
-        <div class="card">
-            <div class="card-header bg-success text-white">Carrito de Venta</div>
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                Carrito de Venta
+            </div>
             <div class="card-body">
-                <table class="table table-sm" id="tablaCarrito">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Precio</th>
-                            <th>Cant.</th>
-                            <th>Subtotal</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Se llena con JavaScript -->
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover" id="tablaCarrito">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cant.</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se llena con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="text-end mt-3">
                     <h4>Total: S/ <span id="totalVenta">0.00</span></h4>
@@ -86,6 +109,21 @@
     <script>
         let carrito = [];
 
+        // Al seleccionar un producto, muestra precio y stock
+        function mostrarDatosProducto() {
+            const select = document.getElementById('productoSelect');
+            const option = select.options[select.selectedIndex];
+
+            if (!option.value) {
+                document.getElementById('precioProducto').value = '';
+                document.getElementById('stockProducto').value = '';
+                return;
+            }
+
+            document.getElementById('precioProducto').value = parseFloat(option.dataset.precio).toFixed(2);
+            document.getElementById('stockProducto').value = option.dataset.stock;
+        }
+
         function agregarProducto() {
             const select = document.getElementById('productoSelect');
             const option = select.options[select.selectedIndex];
@@ -96,12 +134,12 @@
             }
 
             const idProducto = parseInt(option.value);
-            const nombre = option.dataset.nombre;
+            const nombre = option.dataset.codigo + ' - ' + option.dataset.nombre;
             const precio = parseFloat(option.dataset.precio);
             const stock = parseInt(option.dataset.stock);
             const cantidad = parseInt(document.getElementById('cantidad').value);
 
-            if (cantidad <= 0) {
+            if (isNaN(cantidad) || cantidad <= 0) {
                 alert('La cantidad debe ser mayor a 0');
                 return;
             }
@@ -111,11 +149,11 @@
                 return;
             }
 
-            // Si ya existe en el carrito, sumar cantidad
+            // Si ya está en el carrito, sumar cantidad
             const existe = carrito.find(x => x.idProducto === idProducto);
             if (existe) {
                 if (existe.cantidad + cantidad > stock) {
-                    alert('Stock insuficiente');
+                    alert('Stock insuficiente. Disponible: ' + stock);
                     return;
                 }
                 existe.cantidad += cantidad;
@@ -131,8 +169,12 @@
             }
 
             renderCarrito();
+
+            // Limpiar selección
             document.getElementById('cantidad').value = 1;
             select.selectedIndex = 0;
+            document.getElementById('precioProducto').value = '';
+            document.getElementById('stockProducto').value = '';
         }
 
         function eliminarItem(index) {
@@ -154,7 +196,7 @@
                             <td>${item.cantidad}</td>
                             <td>S/ ${item.subtotal.toFixed(2)}</td>
                             <td>
-                                <button class="btn btn-sm btn-danger" onclick="eliminarItem(${index})">
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarItem(${index})">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </td>
@@ -188,9 +230,7 @@
 
             fetch('/Ventas/Create', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(request)
             })
                 .then(res => res.json())
@@ -203,8 +243,8 @@
                     }
                 })
                 .catch(err => {
-                    alert('Error al registrar la venta');
                     console.error(err);
+                    alert('Error al registrar la venta');
                 });
         }
     </script>

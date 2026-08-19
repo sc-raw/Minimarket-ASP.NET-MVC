@@ -72,6 +72,7 @@ namespace SGM.Infrastructure.DL.DALC.Repositories
 
         public Usuario? ObtenerPorUsername(string username)
         {
+
             using var cn = _bd.ObtenerConexion();
             using var cmd = new SqlCommand("SP_OBTENER_USUARIO_POR_USERNAME", cn);
             cmd.CommandType = CommandType.StoredProcedure;

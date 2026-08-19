@@ -13,6 +13,9 @@ namespace SGM.Domain.Entities
         public string Estado { get; set; } = "Completada";
         public decimal Total { get; set; }
 
+        public string? NombreCliente { get; set; }
+        public string? NombreCajero { get; set; }
+
         // Navegación (opcional)
         public Cliente? Cliente { get; set; }
         public Usuario? Usuario { get; set; }

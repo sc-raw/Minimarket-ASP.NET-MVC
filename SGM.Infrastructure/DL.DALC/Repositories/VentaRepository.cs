@@ -35,7 +35,9 @@ namespace SGM.Infrastructure.DL.DALC.Repositories
                     IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
                     FechaRegistro = Convert.ToDateTime(dr["FechaRegistro"]),
                     Estado = dr["Estado"].ToString() ?? string.Empty,
-                    Total = Convert.ToDecimal(dr["Total"])
+                    Total = Convert.ToDecimal(dr["Total"]),
+                    NombreCliente = dr["NombreCliente"]?.ToString(),
+                    NombreCajero = dr["NombreCajero"]?.ToString()
                 });
             }
 

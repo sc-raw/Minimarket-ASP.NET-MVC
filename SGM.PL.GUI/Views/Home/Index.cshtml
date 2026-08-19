@@ -4,30 +4,109 @@
     var nombres = ViewBag.Nombres as string;
 }
 
-<div class="text-center mt-5">
-    <h1 class="display-5">Bienvenido, @nombres</h1>
-    <p class="lead text-muted">Rol: <strong>@rol</strong></p>
-    <hr />
+<style>
+    .home-wrap {
+        min-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+    }
 
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-3 mb-3">
-            <a href="/Ventas/Create" class="btn btn-success btn-lg w-100">
-                <i class="bi bi-cart-plus"></i><br />Nueva Venta
-            </a>
-        </div>
+    .home-title {
+        font-size: 2.3rem;
+        font-weight: 700;
+        color: #1e3a5f;
+        margin-bottom: 8px;
+    }
+
+    .home-subtitle {
+        font-size: 1.05rem;
+        color: #6b7280;
+        margin-bottom: 6px;
+    }
+
+    .home-role {
+        font-size: 1rem;
+        color: #1e3a5f;
+        font-weight: 600;
+        margin-bottom: 36px;
+    }
+
+    .icon-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 18px;
+    }
+
+    .icon-btn {
+        width: 74px;
+        height: 74px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 1.7rem;
+        color: #fff !important;
+        background: #1e3a5f;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        box-shadow: 0 6px 16px rgba(30, 58, 95, 0.25);
+    }
+
+        .icon-btn:hover {
+            transform: translateY(-3px);
+            background: #2a5298;
+            box-shadow: 0 10px 22px rgba(30, 58, 95, 0.30);
+            color: #fff !important;
+        }
+</style>
+
+<div class="home-wrap">
+    <h1 class="home-title">¡Hola, @nombres!</h1>
+
+    <p class="home-subtitle">SGM · Sistema de Gestión de Minimarket</p>
+
+    <p class="home-role">Rol: @rol</p>
+
+    <div class="icon-row">
+        <a href="/Home" class="icon-btn" title="Perfil">
+            <i class="bi bi-person-circle"></i>
+        </a>
+
+        <a href="/Clientes" class="icon-btn" title="Clientes">
+            <i class="bi bi-people"></i>
+        </a>
+
+        <a href="/Ventas" class="icon-btn" title="Ventas">
+            <i class="bi bi-receipt"></i>
+        </a>
+
+        <a href="/Ventas/Create" class="icon-btn" title="Nueva Venta">
+            <i class="bi bi-cart-plus"></i>
+        </a>
 
         @if (rol == "Administrador")
         {
-            <div class="col-md-3 mb-3">
-                <a href="/Productos" class="btn btn-primary btn-lg w-100">
-                    <i class="bi bi-box-seam"></i><br />Productos
-                </a>
-            </div>
-            <div class="col-md-3 mb-3">
-                <a href="/Usuarios" class="btn btn-secondary btn-lg w-100">
-                    <i class="bi bi-people"></i><br />Usuarios
-                </a>
-            </div>
+            <a href="/Categorias" class="icon-btn" title="Categorías">
+                <i class="bi bi-tags"></i>
+            </a>
+
+            <a href="/Productos" class="icon-btn" title="Productos">
+                <i class="bi bi-box-seam"></i>
+            </a>
+
+            <a href="/Usuarios" class="icon-btn" title="Usuarios">
+                <i class="bi bi-person-gear"></i>
+            </a>
+
+            <a href="#" class="icon-btn" title="Reportes (próximamente)"
+               onclick="alert('Módulo de Reportes próximamente'); return false;">
+                <i class="bi bi-bar-chart"></i>
+            </a>
         }
     </div>
 </div>
