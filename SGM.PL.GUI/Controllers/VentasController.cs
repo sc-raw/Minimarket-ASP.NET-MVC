@@ -91,5 +91,17 @@ namespace SGM.PL.GUI.Controllers
         {
             return HttpContext.Session.GetString("Rol") == "Administrador";
         }
+
+        public IActionResult Boleta(long id)
+        {
+            if (!EstaLogueado())
+                return RedirectToAction("Login", "Account");
+
+            var venta = _ventaService.ObtenerPorId(id); 
+            if (venta == null) return NotFound();
+
+            return View(venta);
+        }
+
     }
 }
