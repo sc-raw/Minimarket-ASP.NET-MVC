@@ -1,4 +1,7 @@
-﻿@{
+﻿
+
+
+@{
     ViewData["Title"] = "Nueva Venta";
     var productos = ViewBag.Productos as List<SGM.Domain.Entities.Producto>;
 }
@@ -6,99 +9,156 @@
 <h2>Nueva Venta</h2>
 <hr />
 
-<div class="row">
-    <!-- Panel izquierdo: datos -->
-    <div class="col-md-5">
-        <div class="card mb-3 shadow-sm">
-            <div class="card-header bg-primary text-white">
-                Datos de la Venta
-            </div>
-            <div class="card-body">
 
+<style>
+    .venta-card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .venta-header {
+        background: #198754;
+        color: #fff;
+        padding: 14px 18px;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .venta-body {
+        padding: 20px;
+    }
+
+    .total-box {
+        background: #e8f5e9;
+        border-radius: 10px;
+        padding: 14px 16px;
+        text-align: right;
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: #198754;
+    }
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="venta-card">
+            <div class="venta-header">
+                <i class="bi bi-cart3 me-2"></i> Nueva Venta
+            </div>
+
+            <div class="venta-body">
                 <!-- Cliente -->
-                <div class="mb-3">
+                <div class="mb-4">
                     <label class="form-label fw-semibold">Cliente</label>
                     <select id="IdCliente" class="form-select" asp-items="ViewBag.Clientes">
                         <option value="">-- Seleccione cliente --</option>
                     </select>
                 </div>
 
-                <!-- Producto (solo código + nombre) -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Producto</label>
-                    <select id="productoSelect" class="form-select" onchange="mostrarDatosProducto()">
-                        <option value="">-- Seleccione producto --</option>
-                        @if (productos != null)
-                        {
-                            foreach (var p in productos)
-                            {
-                                <option value="@p.IdProducto"
-                                        data-nombre="@p.Nombre"
-                                        data-codigo="@p.Codigo"
-                                        data-precio="@p.Precio"
-                                        data-stock="@p.Stock">
-                                    @p.Codigo - @p.Nombre
-                                </option>
-                            }
-                        }
-                    </select>
-                </div>
+                <!-- Productos a vender -->
+                <h6 class="fw-semibold mb-3">
+                    <i class="bi bi-list-ul me-1"></i> Productos a vender
+                </h6>
 
-                <!-- Datos del producto seleccionado -->
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <label class="form-label fw-semibold">Precio (S/)</label>
-                        <input type="text" id="precioProducto" class="form-control" readonly />
+                <div class="row g-2 align-items-end mb-2">
+                    <div class="col-md-5">
+                        <label class="form-label">Producto</label>
+                        <select id="productoSelect" class="form-select" onchange="mostrarDatosProducto()">
+                            <option value="">-- Seleccione producto --</option>
+                            @if (productos != null)
+                            {
+                                foreach (var p in productos)
+                                {
+                                    <option value="@p.IdProducto"
+                                            data-nombre="@p.Nombre"
+                                            data-codigo="@p.Codigo"
+                                            data-precio="@p.Precio"
+                                            data-stock="@p.Stock">
+                                        @p.Codigo - @p.Nombre
+                                    </option>
+                                }
+                            }
+                        </select>
                     </div>
-                    <div class="col-6">
-                        <label class="form-label fw-semibold">Stock disponible</label>
+
+                    <div class="col-md-2">
+                        <label class="form-label">Stock</label>
                         <input type="text" id="stockProducto" class="form-control" readonly />
                     </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">Precio (S/)</label>
+                        <input type="text" id="precioProducto" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">Cantidad</label>
+                        <input type="number" id="cantidad" class="form-control" value="1" min="1" />
+                    </div>
+
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-outline-danger w-100" onclick="limpiarProducto()" title="Limpiar">
+                            −
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Cantidad -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Cantidad</label>
-                    <input type="number" id="cantidad" class="form-control" value="1" min="1" />
-                </div>
-
-                <button type="button" class="btn btn-primary w-100" onclick="agregarProducto()">
-                    <i class="bi bi-plus-lg"></i> Agregar al carrito
+                <button type="button" class="btn btn-outline-success btn-sm mb-3" onclick="agregarProducto()">
+                    <i class="bi bi-plus-circle"></i> Agregar producto
                 </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Panel derecho: carrito -->
-    <div class="col-md-7">
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white">
-                Carrito de Venta
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-sm table-hover" id="tablaCarrito">
+                <!-- Carrito -->
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-hover align-middle" id="tablaCarrito">
                         <thead class="table-light">
                             <tr>
                                 <th>Producto</th>
                                 <th>Precio</th>
                                 <th>Cant.</th>
                                 <th>Subtotal</th>
-                                <th></th>
+                                <th style="width:60px"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Se llena con JavaScript -->
                         </tbody>
                     </table>
                 </div>
 
-                <div class="text-end mt-3">
-                    <h4>Total: S/ <span id="totalVenta">0.00</span></h4>
+                <div class="total-box mb-4">
+                    Total: S/ <span id="totalVenta">0.00</span>
                 </div>
 
-                <button type="button" class="btn btn-success w-100 mt-2" onclick="registrarVenta()">
-                    <i class="bi bi-check-lg"></i> Registrar Venta
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/Ventas" class="btn btn-secondary">Cancelar</a>
+                    <button type="button" class="btn btn-success" onclick="abrirConfirmacion()">
+                        <i class="bi bi-cash-coin"></i> Pagar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación (único modal) -->
+<div class="modal fade" id="modalConfirmar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Confirmar venta</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">¿Estás seguro de registrar esta venta?</p>
+                <p class="mb-0 text-muted">
+                    Total a cobrar: <strong>S/ <span id="totalConfirmar">0.00</span></strong>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="registrarVenta()">
+                    Aceptar
                 </button>
             </div>
         </div>
@@ -109,7 +169,6 @@
     <script>
         let carrito = [];
 
-        // Al seleccionar un producto, muestra precio y stock
         function mostrarDatosProducto() {
             const select = document.getElementById('productoSelect');
             const option = select.options[select.selectedIndex];
@@ -122,6 +181,13 @@
 
             document.getElementById('precioProducto').value = parseFloat(option.dataset.precio).toFixed(2);
             document.getElementById('stockProducto').value = option.dataset.stock;
+        }
+
+        function limpiarProducto() {
+            document.getElementById('productoSelect').selectedIndex = 0;
+            document.getElementById('precioProducto').value = '';
+            document.getElementById('stockProducto').value = '';
+            document.getElementById('cantidad').value = 1;
         }
 
         function agregarProducto() {
@@ -149,7 +215,6 @@
                 return;
             }
 
-            // Si ya está en el carrito, sumar cantidad
             const existe = carrito.find(x => x.idProducto === idProducto);
             if (existe) {
                 if (existe.cantidad + cantidad > stock) {
@@ -169,12 +234,7 @@
             }
 
             renderCarrito();
-
-            // Limpiar selección
-            document.getElementById('cantidad').value = 1;
-            select.selectedIndex = 0;
-            document.getElementById('precioProducto').value = '';
-            document.getElementById('stockProducto').value = '';
+            limpiarProducto();
         }
 
         function eliminarItem(index) {
@@ -190,23 +250,23 @@
             carrito.forEach((item, index) => {
                 total += item.subtotal;
                 tbody.innerHTML += `
-                        <tr>
-                            <td>${item.nombre}</td>
-                            <td>S/ ${item.precio.toFixed(2)}</td>
-                            <td>${item.cantidad}</td>
-                            <td>S/ ${item.subtotal.toFixed(2)}</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarItem(${index})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>`;
+                                <tr>
+                                    <td>${item.nombre}</td>
+                                    <td>S/ ${item.precio.toFixed(2)}</td>
+                                    <td>${item.cantidad}</td>
+                                    <td>S/ ${item.subtotal.toFixed(2)}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarItem(${index})">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>`;
             });
 
             document.getElementById('totalVenta').innerText = total.toFixed(2);
         }
 
-        function registrarVenta() {
+        function abrirConfirmacion() {
             const idCliente = document.getElementById('IdCliente').value;
 
             if (!idCliente) {
@@ -218,6 +278,16 @@
                 alert('El carrito está vacío');
                 return;
             }
+
+            document.getElementById('totalConfirmar').innerText =
+                document.getElementById('totalVenta').innerText;
+
+            const modal = new bootstrap.Modal(document.getElementById('modalConfirmar'));
+            modal.show();
+        }
+
+        function registrarVenta() {
+            const idCliente = document.getElementById('IdCliente').value;
 
             const request = {
                 idCliente: parseInt(idCliente),
@@ -235,11 +305,15 @@
             })
                 .then(res => res.json())
                 .then(data => {
+                    const modalEl = document.getElementById('modalConfirmar');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+
                     if (data.success) {
-                        alert('Venta registrada correctamente. N° ' + data.idVenta);
+                        // Sin alert: va a Ventas y ahí se muestra el mensaje
                         window.location.href = '/Ventas';
                     } else {
-                        alert('Error: ' + data.message);
+                        alert('Error: ' + data.message); // solo si falla
                     }
                 })
                 .catch(err => {

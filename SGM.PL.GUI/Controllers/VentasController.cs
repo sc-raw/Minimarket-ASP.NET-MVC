@@ -47,7 +47,6 @@ namespace SGM.PL.GUI.Controllers
 
             try
             {
-                // Asignar el usuario logueado
                 request.IdUsuario = HttpContext.Session.GetInt32("IdUsuario") ?? 0;
 
                 if (request.IdUsuario == 0)
@@ -55,7 +54,9 @@ namespace SGM.PL.GUI.Controllers
 
                 var idVenta = _ventaService.Registrar(request);
 
-                return Json(new { success = true, message = "Venta registrada correctamente", idVenta });
+                TempData["Success"] = "Venta realizada correctamente";
+
+                return Json(new { success = true, idVenta });
             }
             catch (Exception ex)
             {

@@ -25,6 +25,7 @@ builder.Services.AddScoped<IProductoService, ProductoBC>();
 builder.Services.AddScoped<IClienteService, ClienteBC>();
 builder.Services.AddScoped<IUsuarioService, UsuarioBC>();
 builder.Services.AddScoped<IVentaService, VentaBC>();
+builder.Services.AddScoped<IReporteService, ReporteBC>();
 
 
 builder.Services.AddDistributedMemoryCache();
