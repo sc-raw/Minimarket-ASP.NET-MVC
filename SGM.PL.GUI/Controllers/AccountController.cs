@@ -44,5 +44,18 @@ namespace SGM.PL.GUI.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+
+        public IActionResult Perfil()
+        {
+            var idUsuario = HttpContext.Session.GetInt32("IdUsuario");
+            if (idUsuario == null)
+                return RedirectToAction("Login");
+
+            var usuario = _usuarioService.ObtenerPorId(idUsuario.Value);
+            if (usuario == null)
+                return RedirectToAction("Login");
+
+            return View(usuario);
+        }
     }
 }

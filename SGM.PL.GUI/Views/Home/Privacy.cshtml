@@ -1,6 +1,33 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
-}
-<h1>@ViewData["Title"]</h1>
+﻿using Microsoft.AspNetCore.Mvc;
+using SGM.PL.GUI.Models;
+using System.Diagnostics;
 
-<p>Use this page to detail your site's privacy policy.</p>
+namespace SGM.PL.GUI.Controllers
+{
+public class HomeController : Controller
+{
+public IActionResult Index()
+{
+// Validar si hay sesión
+if (HttpContext.Session.GetString("Username") == null)
+{
+return RedirectToAction("Login", "Account");
+}
+
+ViewBag.Rol = HttpContext.Session.GetString("Rol");
+ViewBag.Nombres = HttpContext.Session.GetString("Nombres");
+return View();
+}
+
+public IActionResult Privacy()
+{
+return View();
+}
+
+[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+public IActionResult Error()
+{
+return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+}
+}
+}

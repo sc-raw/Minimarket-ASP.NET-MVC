@@ -43,6 +43,7 @@
                     }
                 </td>
                 <td>
+                    <a href="/Ventas/Details/@item.Id" class="btn btn-sm btn-outline-primary">Ver</a>
                     @if (rol == "Administrador" && item.Estado == "Completada")
                     {
                         <a href="/Ventas/Anular/@item.Id" class="btn btn-sm btn-outline-danger"

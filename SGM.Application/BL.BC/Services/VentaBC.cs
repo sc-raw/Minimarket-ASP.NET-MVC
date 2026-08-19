@@ -11,16 +11,35 @@ namespace SGM.Application.BL.BC.Service
     {
         private readonly IVentaRepository _ventaRepo;
         private readonly IProductoRepository _productoRepo;
+        private readonly IClienteRepository _clienteRepo;
+        private readonly IUsuarioRepository _usuarioRepo;
 
-        public VentaBC(IVentaRepository ventaRepo, IProductoRepository productoRepo)
+        public VentaBC(
+            IVentaRepository ventaRepo,
+            IProductoRepository productoRepo,
+            IClienteRepository clienteRepo,
+            IUsuarioRepository usuarioRepo)
         {
             _ventaRepo = ventaRepo;
             _productoRepo = productoRepo;
+            _clienteRepo = clienteRepo;
+            _usuarioRepo = usuarioRepo;
         }
 
         public List<Venta> Listar() => _ventaRepo.Listar();
 
-        public Venta? ObtenerPorId(long id) => _ventaRepo.ObtenerPorId(id);
+        public Venta? ObtenerPorId(long id)
+        {
+            var venta = _ventaRepo.ObtenerPorId(id);
+            if (venta == null)
+                return null;
+
+            venta.Detalles = _ventaRepo.ListarDetallesPorVenta(id);
+            venta.Cliente = _clienteRepo.ObtenerPorId(venta.IdCliente);
+            venta.Usuario = _usuarioRepo.ObtenerPorId(venta.IdUsuario);
+
+            return venta;
+        }
 
         public long Registrar(CrearVentaRequest request)
         {

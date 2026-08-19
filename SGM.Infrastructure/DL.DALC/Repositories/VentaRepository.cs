@@ -68,6 +68,40 @@ namespace SGM.Infrastructure.DL.DALC.Repositories
             return null;
         }
 
+        public List<DetalleVenta> ListarDetallesPorVenta(long idVenta)
+        {
+            var lista = new List<DetalleVenta>();
+
+            using var cn = _bd.ObtenerConexion();
+            using var cmd = new SqlCommand("SP_LISTAR_DETALLE_VENTA_POR_ID", cn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@IdVenta", idVenta);
+
+            cn.Open();
+            using var dr = cmd.ExecuteReader();
+
+            while (dr.Read())
+            {
+                lista.Add(new DetalleVenta
+                {
+                    Id = Convert.ToInt64(dr["Id"]),
+                    IdVenta = Convert.ToInt64(dr["IdVenta"]),
+                    IdProducto = Convert.ToInt32(dr["IdProducto"]),
+                    Cantidad = Convert.ToInt32(dr["Cantidad"]),
+                    Precio = Convert.ToDecimal(dr["Precio"]),
+                    Subtotal = Convert.ToDecimal(dr["Subtotal"]),
+                    Producto = new Producto
+                    {
+                        IdProducto = Convert.ToInt32(dr["IdProducto"]),
+                        Nombre = dr["NombreProducto"].ToString() ?? string.Empty,
+                        Codigo = dr["CodigoProducto"].ToString() ?? string.Empty
+                    }
+                });
+            }
+
+            return lista;
+        }
+
         public long Registrar(Venta venta, List<DetalleVenta> detalles)
         {
             using var cn = _bd.ObtenerConexion();
