@@ -33,14 +33,13 @@ namespace SGM.Application.BL.BC.Service
 
             bool passwordValida;
 
-            // Si la contraseña guardada es un hash de BCrypt
+
             if (usuario.Password.StartsWith("$2"))
             {
                 passwordValida = BCrypt.Net.BCrypt.Verify(request.Password, usuario.Password);
             }
             else
             {
-                // Todavía está en texto plano (usuarios antiguos)
                 passwordValida = usuario.Password == request.Password;
             }
 
@@ -67,15 +66,12 @@ namespace SGM.Application.BL.BC.Service
 
         public bool Registrar(Usuario usuario)
         {
-            // Hashear la contraseña antes de guardar
             usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
             return _repo.Registrar(usuario);
         }
 
         public bool Actualizar(Usuario usuario)
         {
-            // Si la contraseña no viene hasheada (el usuario la cambió), la hasheamos
-            // BCrypt hashes empiezan con $2
             if (!usuario.Password.StartsWith("$2"))
             {
                 usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);

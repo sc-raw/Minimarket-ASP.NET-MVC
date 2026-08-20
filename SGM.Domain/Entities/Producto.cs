@@ -15,7 +15,6 @@ namespace SGM.Domain.Entities
         public bool Estado { get; set; } = true;
         public int IdCategoria { get; set; }
 
-        // Navegación (opcional pero útil)
         public Categoria? Categoria { get; set; }
     }
 }

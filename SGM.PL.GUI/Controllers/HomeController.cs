@@ -6,7 +6,6 @@ namespace SGM.PL.GUI.Controllers
     {
         public IActionResult Index()
         {
-            // Validar si hay sesión
             if (HttpContext.Session.GetString("Username") == null)
             {
                 return RedirectToAction("Login", "Account");

@@ -5,21 +5,17 @@ using SGM.Infrastructure.DL.DALC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// ===== Inyección de dependencias =====
-// Conexión
 builder.Services.AddSingleton<IBDConexion, BDConexion>();
 
-// Repositorios
+
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IVentaRepository, VentaRepository>();
 
-// Services (Business Components)
 builder.Services.AddScoped<ICategoriaService, CategoriaBC>();
 builder.Services.AddScoped<IProductoService, ProductoBC>();
 builder.Services.AddScoped<IClienteService, ClienteBC>();
@@ -39,7 +35,6 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -50,7 +45,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-//Sesion
 app.UseSession();
 
 app.UseAuthorization();

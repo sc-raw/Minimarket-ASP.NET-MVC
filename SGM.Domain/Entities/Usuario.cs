@@ -9,7 +9,7 @@ namespace SGM.Domain.Entities
         public int Id { get; set; }
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public string Rol { get; set; } = string.Empty;   // "Administrador" o "Cajero"
+        public string Rol { get; set; } = string.Empty;  
         public bool Estado { get; set; } = true;
         public string? Nombres { get; set; }
         public string? Apellidos { get; set; }
